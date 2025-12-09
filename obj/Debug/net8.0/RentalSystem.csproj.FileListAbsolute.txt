@@ -1,0 +1,14 @@
+C:\pj\bin\Debug\net8.0\RentalSystem.exe
+C:\pj\bin\Debug\net8.0\RentalSystem.deps.json
+C:\pj\bin\Debug\net8.0\RentalSystem.runtimeconfig.json
+C:\pj\bin\Debug\net8.0\RentalSystem.dll
+C:\pj\bin\Debug\net8.0\RentalSystem.pdb
+C:\pj\obj\Debug\net8.0\RentalSystem.GeneratedMSBuildEditorConfig.editorconfig
+C:\pj\obj\Debug\net8.0\RentalSystem.AssemblyInfoInputs.cache
+C:\pj\obj\Debug\net8.0\RentalSystem.AssemblyInfo.cs
+C:\pj\obj\Debug\net8.0\RentalSystem.csproj.CoreCompileInputs.cache
+C:\pj\obj\Debug\net8.0\RentalSystem.dll
+C:\pj\obj\Debug\net8.0\refint\RentalSystem.dll
+C:\pj\obj\Debug\net8.0\RentalSystem.pdb
+C:\pj\obj\Debug\net8.0\RentalSystem.genruntimeconfig.cache
+C:\pj\obj\Debug\net8.0\ref\RentalSystem.dll
