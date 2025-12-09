@@ -1,0 +1,129 @@
+@startuml
+skinparam rectangle {
+    BackgroundColor<<entity>> LightYellow
+    BackgroundColor<<interface>> LightBlue
+}
+
+' --- Интерфейсы ---
+interface IState {
+    + getName(): String
+    + isFinal(): boolean
+}
+
+' --- Статусы (реализуют IState) ---
+enum PropertyStatus {
+    AVAILABLE
+    RENTED
+    UNDER_MODERATION
+}
+PropertyStatus ..|> IState
+
+enum PaymentStatus {
+    SUCCESS
+    FAILED
+}
+PaymentStatus ..|> IState
+
+enum ApplicationStatus {
+    PENDING
+    APPROVED
+    REJECTED
+    PAID
+}
+ApplicationStatus ..|> IState
+
+' --- Основные классы ---
+class User {
+    - id: int
+    - name: String
+    - email: String
+    - password: String
+    - role: UserRole  ' <-- вместо отдельного Admin
+    + login(): boolean
+    + logout(): void
+}
+
+enum UserRole {
+    TENANT
+    OWNER
+    ADMIN
+}
+
+class Tenant {
+    - preferences: List<String>
+    + searchApartments(criteria: String): List<Property>
+    + submitApplication(property: Property): boolean
+    + makePayment(application: Application): boolean
+}
+
+class Owner {
+    - rating: double
+    + addProperty(property: Property): boolean
+    + manageProperties(): List<Property>
+    + viewStatistics(): void
+}
+
+class Property {
+    - id: int
+    - address: String
+    - price: double
+    - area: double
+    - description: String
+    - type: PropertyType  ' <-- House/Apartment объединены
+    - status: IState  ' <-- теперь интерфейс!
+    + getDetails(): String
+}
+
+enum PropertyType {
+    APARTMENT
+    HOUSE
+    STUDIO
+    VILLA
+}
+
+class Application {
+    - id: int
+    - date: Date
+    - status: IState  ' <-- теперь интерфейс!
+    - property: Property
+    - tenant: Tenant
+    + processApplication(): boolean
+}
+
+class Payment {
+    - id: int
+    - amount: double
+    - date: Date
+    - status: IState  ' <-- теперь интерфейс!
+    - application: Application
+    + processPayment(): boolean
+}
+
+class Comment {
+    - id: int
+    - text: String
+    - date: Date
+    - author: User
+    - property: Property
+    + addComment(): boolean
+    + deleteComment(): boolean
+}
+
+' --- Ассоциации ---
+User <|-- Tenant
+User <|-- Owner
+
+Tenant "1" --> "*" Application
+Owner "1" --> "*" Property
+Property "1" --> "*" Application
+Application "1" --> "1" Payment
+Property "1" --> "*" Comment
+User "1" --> "*" Comment
+
+' --- Дополнительно: адаптер для платежей (паттерн Adapter)
+class PaymentGatewayAdapter {
+    + processPayment(paymentData: Map<String, Object>): PaymentResult
+    + paymentCallback(paymentId: int, status: PaymentStatus): void
+}
+
+@enduml
