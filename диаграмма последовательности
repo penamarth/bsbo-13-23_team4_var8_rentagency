@@ -1,0 +1,65 @@
+@startuml
+title Сценарий: Поиск жилья арендатором (детальная версия)
+
+actor "Арендатор" as User
+participant "RentSystem" as System <<контроллер>>
+participant "Tenant" as Tenant
+participant "Property" as Property
+participant "IState" as State <<интерфейс>>
+database "База данных" as DB
+
+User -> System: задает фильтры поиска
+activate System
+
+System -> Tenant: searchApartments(criteria: String): List<Property>
+activate Tenant
+
+note over Tenant
+  Критерии могут включать:
+  - район (address)
+  - цена (price)
+  - количество комнат (для Apartment)
+  - тип жилья (type: PropertyType)
+end note
+
+Tenant -> Property: запрос коллекции с фильтрацией
+activate Property
+
+Property -> DB: SELECT * FROM properties\nWHERE условия
+activate DB
+DB --> Property: найденные записи
+deactivate DB
+
+loop для каждого Property
+    Property -> State: getName(): String
+    activate State
+    State --> Property: "AVAILABLE" | "RENTED" | "UNDER_MODERATION"
+    deactivate State
+    
+    Property -> State: isFinal(): boolean
+    activate State
+    State --> Property: false (для AVAILABLE)
+    deactivate State
+    
+    alt status == AVAILABLE
+        Property -> Property: getDetails(): String
+        note right: Формирует описание:\nадрес + цена + площадь\n+ тип + описание
+    end
+end
+
+Property --> Tenant: List<Property> (отфильтрованный)
+deactivate Property
+
+Tenant --> System: List<Property>
+deactivate Tenant
+
+alt найдены подходящие объекты
+    System --> User: отображение списка\nс деталями каждого Property
+else ничего не найдено
+    System --> User: "Нет подходящих объектов\nпопробуйте изменить критерии"
+end
+
+deactivate System
+
+@enduml
+
