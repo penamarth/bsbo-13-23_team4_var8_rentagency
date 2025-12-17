@@ -1,0 +1,47 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Администратор" as Admin
+actor "Арендатор" as Tenant
+actor "Владелец" as Owner
+
+usecase "Управление пользователями" as UC_UserManagement
+usecase "Регистрация / Авторизация" as UC_Auth
+usecase "Поиск жилья" as UC_Search
+usecase "Просмотр деталей объекта" as UC_ViewDetails
+usecase "Подача заявки на аренду" as UC_Apply
+usecase "Оплата" as UC_Payment
+usecase "Комментарии" as UC_Comments
+usecase "Управление объявлениями" as UC_Listings
+
+Admin --> UC_UserManagement
+Admin --> UC_Auth
+
+Tenant --> UC_Auth
+Tenant --> UC_Search
+Tenant --> UC_Apply
+Tenant --> UC_Comments
+
+Owner --> UC_Comments
+Owner --> UC_Listings
+
+' связи между use cases
+UC_Search --> UC_ViewDetails
+UC_Apply --> UC_Payment
+
+' заметки
+note right of Admin
+Администратор - это пользователь
+с ролью ADMIN,
+не отдельный класс
+end note
+
+note right of UC_Payment
+Используется PaymentGatewayAdapter
+для интеграции с внешней
+платёжной системой
+end note
+
+@enduml
