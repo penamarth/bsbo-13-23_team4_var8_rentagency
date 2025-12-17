@@ -56,6 +56,32 @@ Console.WriteLine($"👤 Арендатор: {tenant.Name} (роль: {tenant.Ro
 Console.WriteLine($"   Предпочтения: {string.Join(", ", tenant.Preferences)}");
 Console.WriteLine();
 
+// Сценарий: Поиск жилья арендатором
+
+Console.WriteLine();
+Console.WriteLine("СЦЕНАРИЙ: Поиск жилья арендатором");
+Console.WriteLine("----------------------------------------");
+
+var rentSystem = new RentalSystem.Models.RentSystem(new List<Property> { apartment, house });
+
+Console.WriteLine("➡ Ввод критериев поиска: \"Москва\"");
+var found = rentSystem.Search(tenant, "Москва");
+
+Console.WriteLine();
+Console.WriteLine("Результаты поиска:");
+if (found.Count > 0)
+{
+    foreach (var p in found)
+        Console.WriteLine($" • {p.GetDetails()} (статус: {p.Status.GetName()})");
+}
+else
+{
+    Console.WriteLine("Нет подходящих объектов.");
+}
+
+Console.WriteLine("----------------------------------------");
+Console.WriteLine();
+
 // ----------------------------------------
 // 3. Подача заявки на квартиру
 // ----------------------------------------
