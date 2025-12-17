@@ -1,0 +1,110 @@
+@startuml
+title Class Diagram
+' CONTEXT: Property Management
+package "BC: Property Management" {
+    class Property {
+        - id: int
+        - address: String
+        - price: double
+        - area: double
+        - description: String
+        - type: PropertyType
+        - status: IState
+        + getDetails(): String
+    }
+    class Comment {
+        - id: int
+        - text: String
+        - date: Date
+        - author: User
+        - property: Property
+}
+    class Owner {
+        - rating: double
+        + addProperty(p: Property): boolean
+        + manageProperties(): List~Property~
+}
+    enum PropertyType {
+    APARTMENT
+    HOUSE
+    STUDIO
+    VILLA
+    }
+    enum PropertyStatus {
+    AVAILABLE
+    RENTED
+    UNDER_MODERATION
+    }
+    Property "1" --> "*" Comment
+    Owner "1" --> "*" Property
+}
+' CONTEXT: Application Management
+package "BC: Application Management" {
+    class Application {
+        - id: int
+        - date: Date
+        - status: IState
+        - property: Property
+        - tenant: Tenant
+        + processApplication(): boolean
+}
+    class Tenant {
+        - preferences: List~String~
++ submitApplication(p: Property): boolean }
+    enum ApplicationStatus {
+    PENDING
+    APPROVED
+    REJECTED
+PAID }
+    Tenant "1" --> "*" Application
+    Property "1" --> "*" Application
+}
+' CONTEXT: Payments
+package "BC: Payments" {
+    class Payment {
+        - id: int
+        - amount: double
+        - date: Date
+        - status: IState
+        - application: Application
+        + processPayment(): boolean
+}
+class PaymentGatewayAdapter {
++ processPayment(data: Map): PaymentResult
++ paymentCallback(id: int, status: PaymentStatus): void
+}
+    enum PaymentStatus {
+    SUCCESS
+    FAILED
+    }
+    Application "1" --> "1" Payment
+}
+interface IState {
+    + getName(): String
+    + isFinal(): boolean
+}
+class User {
+    - id: int
+    - name: String
+    - email: String
+    - password: String
+    - role: UserRole
+}
+enum UserRole {
+TENANT
+OWNER
+ADMIN
+}
+User <|-- Tenant
+User <|-- Owner
+
+' RentSystem — контроллер
+class RentSystem {
++ searchProperties(criteria: String)
++ createApplication(tenantId: int, propertyId: int) + approveApplication(appId: int)
++ makePayment(appId: int)
+}
+RentSystem --> Property : uses
+RentSystem --> Application : uses RentSystem --> Payment : uses
+RentSystem --> PaymentGatewayAdapter : uses
+@enduml
