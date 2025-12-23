@@ -1,0 +1,41 @@
+@startuml
+
+!theme cerulean
+title Диаграмма последовательности: Добавление комментария к объекту недвижимости
+
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxmessagesize 180
+skinparam sequenceParticipant underline
+
+actor Арендатор
+participant "Tenant" as tenant
+participant "Comment" as comment
+participant "Property" as property
+
+Арендатор -> tenant: Создание объекта Comment
+
+tenant -> comment **:** new Comment {\n  Id = "...",\n  Text = "...",\n  Date = DateTime.Now,\n  Author = this,\n  Property = property\n}
+
+activate comment
+
+comment -> comment: AddComment()\n→ !string.IsNullOrWhiteSpace(Text)
+
+alt Текст валиден
+    comment --> tenant: return true
+else Текст пустой / невалиден
+    comment --> tenant: return false
+end
+
+deactivate comment
+
+alt Комментарий успешно создан
+    tenant -> property: property.Comments.Add(comment)
+    activate property
+    property --> tenant: Комментарий добавлен в коллекцию
+    deactivate property
+else Ошибка валидации
+    tenant -> tenant: Отказ в добавлении комментария
+end
+
+@enduml
